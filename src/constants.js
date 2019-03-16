@@ -1,4 +1,4 @@
-export const WIDTH = 800;
+export const WIDTH = 600;
 export const HEIGHT = 600;
 export const SQUARE_SIZE = 10;
 export const snakeBodyColor = '#8cd3e2';
@@ -17,8 +17,8 @@ export const DIRECTION_TICKS = {
     LEFT: (x, y) => ({ x: x - 1, y }),
 };
 export const KEY_CODES_MAPPER = {
-    38: 'UP',
-    39: 'RIGHT',
-    37: 'LEFT',
-    40: 'BOTTOM',
+    UP: 38,
+    RIGHT: 39,
+    LEFT: 37,
+    BOTTOM: 40
 };
