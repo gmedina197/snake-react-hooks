@@ -22,3 +22,5 @@ export const KEY_CODES_MAPPER = {
     LEFT: 37,
     BOTTOM: 40
 };
+
+export const KEY_CODES = [38, 39, 37, 40]

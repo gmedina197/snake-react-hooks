@@ -6,6 +6,7 @@ import {
   WIDTH,
   HEIGHT,
   SQUARE_SIZE,
+  KEY_CODES,
   KEY_CODES_MAPPER
 } from './constants';
 
@@ -15,34 +16,42 @@ function App() {
   const [snakeSize, setSnakeSize] = useState(1); //setSnakeSize(snakeBody + 1)
   const [snake, setSnake] = useState([{ x: WIDTH / 2, y: HEIGHT / 2 }]);
   const canvas = useRef(null);
-  const keyPressed = useKeyPress(38);
-
+  const keyPressed = useKeyPress(KEY_CODES);
 
   useEffect(() => {
     const ctx = canvas.current.getContext('2d');
-    console.log(keyPressed);
     draw(ctx, snake);
     const timer1 = setTimeout(() => {
 
-      switch (keyPressed) {
-        case KEY_CODES_MAPPER.UP:
-          console.log("up");
-          break;
-        case KEY_CODES_MAPPER.BOTTOM:
-          console.log("down");
-          break;
-        case KEY_CODES_MAPPER.RIGHT:
-          console.log("R");
-          break;
-        case KEY_CODES_MAPPER.LEFT:
-          console.log("L");
-          break;
+      if (keyPressed === false) {
+        setSnake([{
+          x: snake[0].x + SQUARE_SIZE, y: snake[0].y
+        }])
       }
 
-      setSnake([{
-        x: snake[0].x + SQUARE_SIZE, y: snake[0].y
-      }])
-    }, 1000);
+      switch (keyPressed) {
+        case KEY_CODES_MAPPER.UP:
+          setSnake([{
+            x: snake[0].x, y: snake[0].y - SQUARE_SIZE
+          }])
+          break;
+        case KEY_CODES_MAPPER.BOTTOM:
+          setSnake([{
+            x: snake[0].x, y: snake[0].y + SQUARE_SIZE
+          }])
+          break;
+        case KEY_CODES_MAPPER.RIGHT:
+          setSnake([{
+            x: snake[0].x + SQUARE_SIZE, y: snake[0].y
+          }])
+          break;
+        case KEY_CODES_MAPPER.LEFT:
+          setSnake([{
+            x: snake[0].x - SQUARE_SIZE, y: snake[0].y
+          }])
+          break;
+      }
+    }, 100);
 
     return () => {
       clearTimeout(timer1)
@@ -90,3 +99,20 @@ const center = { textAlign: 'center' };
 const canvasStyle = { backgroundColor: 'black' }
 
 export default App;
+/*
+
+      if (UP) {
+        console.log('UP')
+      } else if (DOWN) {
+        console.log('D')
+      } else if (LEFT) {
+        console.log('L')
+      } else if (RIGHT) {
+        console.log('R')
+      }
+
+
+  const UP = useKeyPress(38);
+  const DOWN = useKeyPress(40);
+  const RIGHT = useKeyPress(39);
+  const LEFT = useKeyPress(37); */

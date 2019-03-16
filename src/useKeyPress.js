@@ -7,7 +7,17 @@ function useKeyPress(targetKey) {
   // If pressed key is our target key then set to true
   function downHandler({ key, keyCode }) {
     if (key === targetKey || targetKey === keyCode) {
-      setKeyPressed(targetKey);
+      setKeyPressed(true);
+    }
+  }
+
+  function keyCodeArrayHandler(evt) {
+    for (let i = 0; i < targetKey.length; i++) {
+      const keyCode = targetKey[i];
+
+      if (keyCode === evt.keyCode) {
+        setKeyPressed(keyCode)
+      }
     }
   }
 
@@ -20,11 +30,11 @@ function useKeyPress(targetKey) {
 
   // Add event listeners
   useEffect(() => {
-    window.addEventListener('keydown', downHandler);
+    window.addEventListener('keydown', keyCodeArrayHandler);
     //window.addEventListener('keyup', upHandler);
     // Remove event listeners on cleanup
     return () => {
-      window.removeEventListener('keydown', downHandler);
+      window.removeEventListener('keydown', keyCodeArrayHandler);
       //window.removeEventListener('keyup', upHandler);
     };
   }, []); // Empty array ensures that effect is only run on mount and unmount
