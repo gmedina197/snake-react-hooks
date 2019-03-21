@@ -13,70 +13,89 @@ import {
 import useKeyPress from './useKeyPress';
 
 function App() {
-  const [snakeSize, setSnakeSize] = useState(1); //setSnakeSize(snakeBody + 1)
-  const [snake, setSnake] = useState([{ x: WIDTH / 2, y: HEIGHT / 2 }]);
+  const [start, setStart] = useState(false);
+  const [snakeSize, setSnakeSize] = useState(3);
+  const [speed, setSpeed] = useState({ x: 1, y: 0 });
+  const [snake, setSnake] = useState([
+    { x: WIDTH / 2, y: HEIGHT / 2 },
+    { x: WIDTH / 2 + SQUARE_SIZE, y: HEIGHT / 2 },
+    { x: WIDTH / 2 + SQUARE_SIZE * 2, y: HEIGHT / 2 },
+  ]);
   const canvas = useRef(null);
   const keyPressed = useKeyPress(KEY_CODES);
 
   useEffect(() => {
-    const ctx = canvas.current.getContext('2d');
-    draw(ctx, snake);
-    const timer1 = setTimeout(() => {
+    let timer1;
+    if (start) {
+      const ctx = canvas.current.getContext('2d');
+      timer1 = setTimeout(() => {
+        drawSnake(ctx, snake, snakeSize);
 
-      if (keyPressed === false) {
-        setSnake([{
-          x: snake[0].x + SQUARE_SIZE, y: snake[0].y
-        }])
-      }
+        const x = constrain(snake[0].x, 0, WIDTH - SQUARE_SIZE);
+        const y = constrain(snake[0].y, 0, HEIGHT - SQUARE_SIZE);
 
-      switch (keyPressed) {
-        case KEY_CODES_MAPPER.UP:
-          setSnake([{
-            x: snake[0].x, y: snake[0].y - SQUARE_SIZE
-          }])
-          break;
-        case KEY_CODES_MAPPER.BOTTOM:
-          setSnake([{
-            x: snake[0].x, y: snake[0].y + SQUARE_SIZE
-          }])
-          break;
-        case KEY_CODES_MAPPER.RIGHT:
-          setSnake([{
-            x: snake[0].x + SQUARE_SIZE, y: snake[0].y
-          }])
-          break;
-        case KEY_CODES_MAPPER.LEFT:
-          setSnake([{
-            x: snake[0].x - SQUARE_SIZE, y: snake[0].y
-          }])
-          break;
-      }
-    }, 100);
+        if (!keyPressed) {
+          setSnake(update([...snake], x + SQUARE_SIZE, y));
+        }
+
+        switch (keyPressed) {
+          case KEY_CODES_MAPPER.UP:
+            setSnake(update([...snake], x, y - SQUARE_SIZE));
+            break;
+          case KEY_CODES_MAPPER.BOTTOM:
+            setSnake(update([...snake], x, y + SQUARE_SIZE));
+            break;
+          case KEY_CODES_MAPPER.RIGHT:
+            setSnake(update([...snake], x + SQUARE_SIZE, y));
+            break;
+          case KEY_CODES_MAPPER.LEFT:
+            setSnake(update([...snake], x - SQUARE_SIZE, y));
+            break;
+        }
+      }, 100);
+    }
 
     return () => {
-      clearTimeout(timer1)
+      clearTimeout(timer1);
     }
   });
 
   return (
     <div style={center}>
-      <canvas
-        ref={canvas}
-        width={WIDTH}
-        height={HEIGHT}
-        style={canvasStyle}
-      />
+      {
+        start ?
+          <canvas
+            ref={canvas}
+            width={WIDTH}
+            height={HEIGHT}
+            style={canvasStyle}
+          /> :
+          <button onClick={() => setStart(true)}>Start</button>
+      }
     </div>
   );
 }
 
-function draw(ctx, snake) {
-  ctx.clearRect(0, 0, WIDTH, HEIGHT);
-  drawSnake(ctx, snake);
-  const fruitX = Math.random() * WIDTH;
-  const fruitY = Math.random() * HEIGHT;
+function constrain(value, min, max) {
+  return (Math.min(max, Math.max(min, value)));
+}
 
-  //drawRec(ctx, fruitColor, fruitX, fruitY);
+function snack() {
+
+}
+
+function update(snake, x, y) {
+  //for (let i = 0; i < 1; i++) {
+  snake.unshift(snake.pop());
+  snake[0] = { x, y }
+  return snake;
+  /* for (let i = 0; i < snakeSize - 1; i++) {
+  snake[i] = snake[i + 1];
+}
+if (snakeSize >= 1) {
+  snake[0] = { x, y };
+} 
+return snake;*/
 }
 
 function drawRec(ctx, strokeColor, x, y) {
@@ -85,14 +104,11 @@ function drawRec(ctx, strokeColor, x, y) {
   ctx.stroke();
 }
 
-function drawSnake(ctx, snake) {
-  snake.forEach((part, idx) => {
-    if (idx === 0) {
-      drawRec(ctx, snakeHeadColor, part.x, part.y);
-    } else {
-      drawRec(ctx, snakeBodyColor, part.x, part.y);
-    }
-  })
+function drawSnake(ctx, snake, snakeSize) {
+  ctx.clearRect(0, 0, WIDTH, HEIGHT);
+  for (let i = 0; i < snakeSize; i++) {
+    drawRec(ctx, snakeHeadColor, snake[i].x, snake[i].y);
+  }
 }
 
 const center = { textAlign: 'center' };

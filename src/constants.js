@@ -10,12 +10,14 @@ export const DIRECTIONS = {
     RIGHT: 'RIGHT',
     LEFT: 'LEFT',
 };
+
 export const DIRECTION_TICKS = {
     UP: (x, y) => ({ x, y: y - 1 }),
     BOTTOM: (x, y) => ({ x, y: y + 1 }),
     RIGHT: (x, y) => ({ x: x + 1, y }),
     LEFT: (x, y) => ({ x: x - 1, y }),
 };
+
 export const KEY_CODES_MAPPER = {
     UP: 38,
     RIGHT: 39,
