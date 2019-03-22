@@ -10,6 +10,7 @@ import {
   KEY_CODES_MAPPER
 } from './constants';
 
+import useSnack from './useSnack';
 import useKeyPress from './useKeyPress';
 
 function App() {
@@ -18,11 +19,11 @@ function App() {
   const [speed, setSpeed] = useState({ x: 1, y: 0 });
   const [snake, setSnake] = useState([
     { x: WIDTH / 2, y: HEIGHT / 2 },
-    { x: WIDTH / 2 + SQUARE_SIZE, y: HEIGHT / 2 },
-    { x: WIDTH / 2 + SQUARE_SIZE * 2, y: HEIGHT / 2 },
   ]);
   const canvas = useRef(null);
   const keyPressed = useKeyPress(KEY_CODES);
+  const [snack, newSnack] = useSnack(true);
+
 
   useEffect(() => {
     let timer1;
@@ -30,6 +31,17 @@ function App() {
       const ctx = canvas.current.getContext('2d');
       timer1 = setTimeout(() => {
         drawSnake(ctx, snake, snakeSize);
+        drawRec(ctx, fruitColor, snack.x, snack.y);
+
+        if (snack) {
+          const head = snake[0];
+
+          if (head.x === snack.x && head.y === snack.y) {
+            console.log(`comeu`)
+            newSnack();
+            //setSnake([...snake, ]);
+          }
+        }
 
         const x = constrain(snake[0].x, 0, WIDTH - SQUARE_SIZE);
         const y = constrain(snake[0].y, 0, HEIGHT - SQUARE_SIZE);
@@ -52,7 +64,7 @@ function App() {
             setSnake(update([...snake], x - SQUARE_SIZE, y));
             break;
         }
-      }, 100);
+      }, 50);
     }
 
     return () => {
@@ -80,22 +92,10 @@ function constrain(value, min, max) {
   return (Math.min(max, Math.max(min, value)));
 }
 
-function snack() {
-
-}
-
 function update(snake, x, y) {
-  //for (let i = 0; i < 1; i++) {
   snake.unshift(snake.pop());
   snake[0] = { x, y }
   return snake;
-  /* for (let i = 0; i < snakeSize - 1; i++) {
-  snake[i] = snake[i + 1];
-}
-if (snakeSize >= 1) {
-  snake[0] = { x, y };
-} 
-return snake;*/
 }
 
 function drawRec(ctx, strokeColor, x, y) {
@@ -104,10 +104,13 @@ function drawRec(ctx, strokeColor, x, y) {
   ctx.stroke();
 }
 
-function drawSnake(ctx, snake, snakeSize) {
+function drawSnake(ctx, snake) {
   ctx.clearRect(0, 0, WIDTH, HEIGHT);
-  for (let i = 0; i < snakeSize; i++) {
-    drawRec(ctx, snakeHeadColor, snake[i].x, snake[i].y);
+  for (let i = 0; i < snake.length; i++) {
+    if (i === 0)
+      drawRec(ctx, snakeHeadColor, snake[i].x, snake[i].y);
+    else
+      drawRec(ctx, snakeBodyColor, snake[i].x, snake[i].y);
   }
 }
 
@@ -115,20 +118,3 @@ const center = { textAlign: 'center' };
 const canvasStyle = { backgroundColor: 'black' }
 
 export default App;
-/*
-
-      if (UP) {
-        console.log('UP')
-      } else if (DOWN) {
-        console.log('D')
-      } else if (LEFT) {
-        console.log('L')
-      } else if (RIGHT) {
-        console.log('R')
-      }
-
-
-  const UP = useKeyPress(38);
-  const DOWN = useKeyPress(40);
-  const RIGHT = useKeyPress(39);
-  const LEFT = useKeyPress(37); */
