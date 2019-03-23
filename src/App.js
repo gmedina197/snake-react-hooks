@@ -15,7 +15,6 @@ import useKeyPress from './useKeyPress';
 
 function App() {
   const [start, setStart] = useState(false);
-  const [snakeSize, setSnakeSize] = useState(3);
   const [speed, setSpeed] = useState({ x: 1, y: 0 });
   const [snake, setSnake] = useState([
     { x: WIDTH / 2, y: HEIGHT / 2 },
@@ -28,18 +27,27 @@ function App() {
   useEffect(() => {
     let timer1;
     if (start) {
+
+      if (isDead([...snake])) {
+          setStart(false);
+          setSnake([
+            { x: WIDTH / 2, y: HEIGHT / 2 },
+          ]);
+      }
+
       const ctx = canvas.current.getContext('2d');
-      timer1 = setTimeout(() => {
-        drawSnake(ctx, snake, snakeSize);
+      timer1 = requestAnimationFrame(() => {
+        drawSnake(ctx, snake);
         drawRec(ctx, fruitColor, snack.x, snack.y);
 
         if (snack) {
           const head = snake[0];
-
+          const last = snake[snake.length - 1];
           if (head.x === snack.x && head.y === snack.y) {
-            console.log(`comeu`)
+            console.log('length: ' + snake.length);
             newSnack();
-            //setSnake([...snake, ]);
+            const newSnake = [...snake, { x: last.x + SQUARE_SIZE, y: last.y }];
+            setSnake(newSnake);
           }
         }
 
@@ -64,11 +72,12 @@ function App() {
             setSnake(update([...snake], x - SQUARE_SIZE, y));
             break;
         }
-      }, 50);
+      });
     }
 
     return () => {
-      clearTimeout(timer1);
+      cancelAnimationFrame(timer1)
+      //clearTimeout(timer1);
     }
   });
 
@@ -87,6 +96,15 @@ function App() {
     </div>
   );
 }
+
+const isDead = snake => {
+  if (snake.length > 1) {
+    const head = snake.shift();
+    return snake.find(inTail => inTail.x === head.x && inTail.y === head.y);
+  }
+  return null;
+}
+
 
 function constrain(value, min, max) {
   return (Math.min(max, Math.max(min, value)));
