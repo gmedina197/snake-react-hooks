@@ -29,10 +29,10 @@ function App() {
     if (start) {
 
       if (isDead([...snake])) {
-          setStart(false);
-          setSnake([
-            { x: WIDTH / 2, y: HEIGHT / 2 },
-          ]);
+        setStart(false);
+        setSnake([
+          { x: WIDTH / 2, y: HEIGHT / 2 },
+        ]);
       }
 
       const ctx = canvas.current.getContext('2d');
@@ -70,6 +70,9 @@ function App() {
             break;
           case KEY_CODES_MAPPER.LEFT:
             setSnake(update([...snake], x - SQUARE_SIZE, y));
+            break;
+          default:
+            setSnake(update([...snake], x + SQUARE_SIZE, y));
             break;
         }
       });
